@@ -1,12 +1,26 @@
+using Microsoft.EntityFrameworkCore;
+using MoqExercise.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<RegisterDbContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("InMemoryDb"));
+builder.Services.AddScoped<IRegisterRepository, RegisterRepository>();
+builder.Services.AddSingleton<IReservationRepository, ReservationRepository>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
