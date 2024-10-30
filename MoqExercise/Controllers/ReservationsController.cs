@@ -11,8 +11,8 @@ public class ReservationsController(IReservationRepository repo) : ControllerBas
     private readonly IReservationRepository _repo = repo;
 
     [HttpGet]
-    public IEnumerable<Reservation> Get() =>
-        _repo.Reservations;
+    public ActionResult<IEnumerable<Reservation>> Get() =>
+        Ok(_repo.Reservations);
 
     [HttpGet("{id}")]
     public ActionResult<Reservation> Get(int id)
@@ -27,13 +27,17 @@ public class ReservationsController(IReservationRepository repo) : ControllerBas
     }
 
     [HttpPost]
-    public Reservation Post([FromBody] Reservation res) =>
-        _repo.AddReservation(new Reservation
+    public ActionResult<Reservation> Post([FromBody] Reservation res) =>
+        CreatedAtAction(nameof(Post), _repo.AddReservation(new Reservation
         {
             Name = res.Name,
             StartLocation = res.StartLocation,
             EndLocation = res.EndLocation
-        });
+        }));
+
+    [HttpPut]
+    public ActionResult<Reservation> Put([FromBody] Reservation res) =>
+        Ok(_repo.UpdateReservation(res));
 
     [HttpDelete("{id}")]
     public void Delete(int id) =>
